@@ -4,39 +4,44 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Component
 public class JdbcTransferDao implements TransferDao{
     private JdbcTemplate jdbcTemplate;
 
     public JdbcTransferDao(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;}
 
     @Override
-    public List<Transfer> listAll(User user) {
-        List<Transfer> transfers = new ArrayList<>();
+    public Map<Integer,Transfer> listAll(int accountID) {
+        Map<Integer,Transfer> transfers = new HashMap<>();
         String sql = "SELECT transfer.*, transfer_type.transfer_type_desc, transfer_status.transfer_status_desc " +
                 "FROM transfer" +
                 "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
-                "JOIN transfer_status ON transfer.transfer_status_id = transfer_status.transfer_status_id;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+                "JOIN transfer_status ON transfer.transfer_status_id = transfer_status.transfer_status_id" +
+                "WHERE transfer.account_from = ? OR transfer.account_to = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql,accountID,accountID);
         while (results.next()) {
             Transfer transfer = mapRowToTransfer(results);
-            transfers.add(transfer);
+            transfers.put(transfer.getTransferID(), transfer);
         }
         return transfers;
     }
 
     @Override
-    public Transfer getTransfer(int transferID) {
+    public Transfer getTransfer(int transferID, int accountID) {
         Transfer transfer = null;
         String sql = "SELECT transfer.*, transfer_type.transfer_type_desc, transfer_status.transfer_status_desc " +
                 "FROM transfer" +
                 "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
                 "JOIN transfer_status ON transfer.transfer_status_id = transfer_status.transfer_status_id" +
-                "WHERE transfer_id = ?;";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferID);
+                "WHERE transfer.transfer_id = ? AND (transfer.account_from = ? OR transfer.account_to = ?);";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferID, accountID, accountID);
         transfer = mapRowToTransfer(result);
 
         return transfer;

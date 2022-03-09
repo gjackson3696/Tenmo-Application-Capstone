@@ -3,9 +3,11 @@ package com.techelevator.tenmo.dao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
+@Component
 public class JdbcAccountDao implements AccountDao{
     private JdbcTemplate jdbcTemplate;
 
@@ -36,9 +38,18 @@ public class JdbcAccountDao implements AccountDao{
     }
 
     @Override
-    public Account getAccount(int accountID) {
+    public Account getAccountByUserID(int userID) {
         Account account = null;
-        String sql = "SELECT account.*, username FROM account JOIN tenmo_user ON account.user_id = tenmo_user.user_id WHERE account_id = ?;";
+        String sql = "SELECT account.*, username FROM account JOIN tenmo_user ON account.user_id = tenmo_user.user_id WHERE account.user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userID);
+        account = mapRowToAccount(results);
+        return account;
+    }
+
+    @Override
+    public Account getAccountByAccountID(int accountID) {
+        Account account = null;
+        String sql = "SELECT account.*, username FROM account JOIN tenmo_user ON account.user_id = tenmo_user.user_id WHERE account.account_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountID);
         account = mapRowToAccount(results);
         return account;
