@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import java.math.BigDecimal;
 
@@ -32,5 +33,23 @@ public class JdbcAccountDao implements AccountDao{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Account getAccount(int accountID) {
+        Account account = null;
+        String sql = "SELECT account.*, username FROM account JOIN tenmo_user ON account.user_id = tenmo_user.user_id WHERE account_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountID);
+        account = mapRowToAccount(results);
+        return account;
+    }
+
+    Account mapRowToAccount(SqlRowSet results) {
+        Account account = new Account();
+        account.setAccountID(results.getInt("account_id"));
+        account.setUserID(results.getInt("user_id"));
+        account.setUsername(results.getString("username"));
+        account.setBalance(results.getBigDecimal("balance"));
+        return account;
     }
 }

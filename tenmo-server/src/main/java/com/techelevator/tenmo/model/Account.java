@@ -20,6 +20,10 @@ public class Account {
         this.balance = balance;
     }
 
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     public void setAccountID(int accountID) {
         this.accountID = accountID;
     }

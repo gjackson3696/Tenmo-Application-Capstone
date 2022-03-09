@@ -8,4 +8,5 @@ public interface AccountDao {
     BigDecimal getBalance(int userID);
     void deposit(Account account, BigDecimal amount);
     boolean withdraw(Account account, BigDecimal amount);
+    Account getAccount(int accountID);
 }
