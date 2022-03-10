@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 public class Transfer {
     private int transferID, accountFrom, accountTo;
+    private String usernameFrom, usernameTo;
     @NotNull
     private int transferTypeID, transferStatusID, userFromID, userToID;
     @NotEmpty
@@ -26,6 +27,22 @@ public class Transfer {
         this.transferType = transferType;
         this.transferStatus = transferStatus;
         this.amount = amount;
+    }
+
+    public String getUsernameFrom() {
+        return usernameFrom;
+    }
+
+    public void setUsernameFrom(String usernameFrom) {
+        this.usernameFrom = usernameFrom;
+    }
+
+    public String getUsernameTo() {
+        return usernameTo;
+    }
+
+    public void setUsernameTo(String usernameTo) {
+        this.usernameTo = usernameTo;
     }
 
     public int getUserFromID() {

@@ -100,16 +100,33 @@ public class ConsoleService {
         System.out.println(String.format("Your current account balance is: $%.2f",balance.doubleValue()));
     }
 
-    public void displayTransactionHistory(Map<Integer, Transfer> transfers) {
+    public void displayTransactionHistory(Map<Integer, Transfer> transfers, User currentUser) {
         printSeparator();
         System.out.println("Transfers");
         System.out.println(String.format("%-10s%-25s%s", "ID", "From/To", "Amount"));
         printSeparator();
         Set<Integer> keys = transfers.keySet();
         for (int key : keys) {
-            System.out.println(String.format("%-10d%-25s$%.2f", key, transfers.get(key).getTransferType() + ": " ));
+            Transfer transfer = transfers.get(key);
+            printTransfer(transfer,currentUser,key);
         }
+        printSeparator();
+    }
 
+    private void printTransfer(Transfer transfer, User currentUser, int key) {
+        if(transfer.getTransferType().equals("Send")) {
+            if(transfer.getUsernameTo().equals(currentUser.getUsername())) {
+                System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+            } else {
+                System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
+            }
+        } else {
+            if(transfer.getUsernameTo().equals(currentUser.getUsername())) {
+                System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
+            } else {
+                System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+            }
+        }
     }
 
     public Transfer sendMoney(User currentUser, List<User> userList) {
