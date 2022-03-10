@@ -108,6 +108,8 @@ public class App {
 		// TODO Auto-generated method stub
 		Transfer newTransfer = consoleService.sendMoney(currentUser.getUser(),userService.getUserList());
         transferService.sendMoney(newTransfer);
+        transferService.addTransfer(newTransfer);
+
 	}
 
 	private void requestBucks() {

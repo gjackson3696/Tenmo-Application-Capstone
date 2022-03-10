@@ -8,7 +8,9 @@ import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class ConsoleService {
 
@@ -96,6 +98,18 @@ public class ConsoleService {
 
     public void viewCurrentBalance(BigDecimal balance) {
         System.out.println(String.format("Your current account balance is: $%.2f",balance.doubleValue()));
+    }
+
+    public void displayTransactionHistory(Map<Integer, Transfer> transfers) {
+        printSeparator();
+        System.out.println("Transfers");
+        System.out.println(String.format("%-10s%-25s%s", "ID", "From/To", "Amount"));
+        printSeparator();
+        Set<Integer> keys = transfers.keySet();
+        for (int key : keys) {
+            System.out.println(String.format("%-10d%-25s$%.2f", key, transfers.get(key).getTransferType() + ": " ));
+        }
+
     }
 
     public Transfer sendMoney(User currentUser, List<User> userList) {

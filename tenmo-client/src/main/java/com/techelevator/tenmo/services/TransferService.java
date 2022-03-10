@@ -46,6 +46,18 @@ public class TransferService {
         }
     }
 
+    public Transfer addTransfer(Transfer transfer) {
+        HttpEntity<Transfer> entity = makeTransferEntity(transfer);
+        try {
+            ResponseEntity<Transfer> returnedTransfer = restTemplate.exchange(API_BASE_URL + "" +
+                    "transfers", HttpMethod.POST, entity, Transfer.class);
+            transfer = returnedTransfer.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println(e.getMessage());
+        }
+        return transfer;
+    }
+
     private HttpEntity<Transfer> makeTransferEntity(Transfer auction) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
