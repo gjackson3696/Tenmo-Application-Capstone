@@ -2,9 +2,11 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.*;
 
+import java.util.List;
 import java.util.Map;
 
 public class App {
@@ -100,19 +102,20 @@ public class App {
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
         Map<Integer, Transfer> allTransfers = transferService.getAllTransfers();
-        consoleService.displayTransactionHistory(allTransfers, currentUser.getUser());
+        consoleService.displayTransactionHistory(allTransfers, currentUser.getUser(), false);
         consoleService.displayTransactionDetails(allTransfers);
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+        Map<Integer, Transfer> allTransfers = transferService.getAllTransfers();
+        consoleService.displayTransactionHistory(allTransfers, currentUser.getUser(), true);
 	}
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
 		Transfer newTransfer = consoleService.sendMoney(currentUser.getUser(),userService.getUserList());
-        if (accountService.getBalance().compareTo(newTransfer.getAmount()) >= 0) {
+        if (accountService.getBalance().compareTo(newTransfer.getAmount()) >= 0 && isValidUser(newTransfer.getUserToID())) {
             transferService.sendMoney(newTransfer);
             transferService.addTransfer(newTransfer);
         } else {
@@ -123,7 +126,23 @@ public class App {
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+		Transfer newTransfer = consoleService.requestMoney(currentUser.getUser(),userService.getUserList());
+        if(isValidUser(newTransfer.getUserFromID())) {
+            transferService.addTransfer(newTransfer);
+        } else {
+            System.out.println("This transaction could not be processed");
+        }
 	}
+
+    private boolean isValidUser(int userID) {
+        List<User> userList = userService.getUserList();
+        boolean found = false;
+        for(User user : userList) {
+            if (user.getId() == userID) {
+                found = true;
+            }
+        }
+        return found;
+    }
 
 }

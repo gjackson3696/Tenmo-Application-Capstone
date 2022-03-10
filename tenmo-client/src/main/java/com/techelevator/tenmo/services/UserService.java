@@ -31,7 +31,7 @@ public class UserService {
             ResponseEntity<List<User>> response = restTemplate.exchange(API_BASE_URL + "/users", HttpMethod.GET,makeAuthEntity(),responseType);
             userList = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
+            //BasicLogger.log(e.getMessage());
         }
         return userList;
     }

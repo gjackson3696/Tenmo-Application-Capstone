@@ -31,7 +31,7 @@ public class AccountService {
             ResponseEntity<BigDecimal> response = restTemplate.exchange(API_BASE_URL + "balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
             balance = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println(e.getMessage());;
+            //BasicLogger.log(e.getMessage());
         }
         return balance;
     }

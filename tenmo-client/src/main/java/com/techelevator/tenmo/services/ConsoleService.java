@@ -100,7 +100,7 @@ public class ConsoleService {
         System.out.println(String.format("Your current account balance is: $%.2f",balance.doubleValue()));
     }
 
-    public void displayTransactionHistory(Map<Integer, Transfer> transfers, User currentUser) {
+    public void displayTransactionHistory(Map<Integer, Transfer> transfers, User currentUser, boolean isPending) {
         printSeparator();
         System.out.println("Transfers");
         System.out.println(String.format("%-10s%-25s%s", "ID", "From/To", "Amount"));
@@ -108,7 +108,13 @@ public class ConsoleService {
         Set<Integer> keys = transfers.keySet();
         for (int key : keys) {
             Transfer transfer = transfers.get(key);
-            printTransfer(transfer,currentUser,key);
+            if(isPending) {
+                if(transfer.getTransferStatus().equals("Pending")) {
+                    printTransfer(transfer,currentUser,key,isPending);
+                }
+            } else {
+                printTransfer(transfer, currentUser, key, isPending);
+            }
         }
         printSeparator();
     }
@@ -135,34 +141,44 @@ public class ConsoleService {
             response = promptForInt("Please enter a valid transfer ID (0 to cancel): ");
         }
 
-
     }
 
-    private void printTransfer(Transfer transfer, User currentUser, int key) {
-        if(transfer.getTransferType().equals("Send")) {
-            if(transfer.getUsernameTo().equals(currentUser.getUsername())) {
-                System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+    public int pendingRequests(User currentUser, List<User> userList) {
+        int response = promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
+        while(true) {
+            break;
+        }
+        return 1;
+    }
+
+    private void printTransfer(Transfer transfer, User currentUser, int key, boolean isPending) {
+        if(!isPending) {
+            if (transfer.getTransferType().equals("Send") || transfer.getTransferStatus().equals("Pending")) {
+                if (transfer.getUsernameTo().equals(currentUser.getUsername())) {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+                } else {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
+                }
             } else {
-                System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
+                if (transfer.getUsernameTo().equals(currentUser.getUsername())) {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
+                } else {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+                }
             }
         } else {
-            if(transfer.getUsernameTo().equals(currentUser.getUsername())) {
-                System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
-            } else {
-                System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+            if(transfer.getTransferStatus().equals("Pending")) {
+                if (transfer.getUsernameTo().equals(currentUser.getUsername())) {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+                } else {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
+                }
             }
         }
     }
 
     public Transfer sendMoney(User currentUser, List<User> userList) {
-        printSeparator();
-        System.out.println("Users");
-        System.out.println(String.format("%-10s%s","ID","Name"));
-        printSeparator();
-
-        userList.remove(currentUser);
-        printUserList(userList);
-        printSeparator();
+        listUsers(currentUser, userList);
 
         Transfer transfer = new Transfer();
         transfer.setUserToID(promptForInt("Enter ID of user you are sending to (0 to cancel):"));
@@ -174,6 +190,32 @@ public class ConsoleService {
         transfer.setTransferStatusID(2);
 
         return transfer;
+    }
+
+    public Transfer requestMoney(User currentUser, List<User> userList) {
+       listUsers(currentUser, userList);
+
+        Transfer transfer = new Transfer();
+        transfer.setUserFromID(promptForInt("Enter ID of user you are requesting from (0 to cancel):"));
+        transfer.setAmount(promptForBigDecimal("Enter amount:"));
+        transfer.setUserToID(currentUser.getId().intValue());
+        transfer.setTransferType("Request");
+        transfer.setTransferTypeID(1);
+        transfer.setTransferStatus("Pending");
+        transfer.setTransferStatusID(1);
+
+        return transfer;
+    }
+
+    private void listUsers(User currentUser, List<User> userList) {
+        printSeparator();
+        System.out.println("Users");
+        System.out.println(String.format("%-10s%s","ID","Name"));
+        printSeparator();
+
+        userList.remove(currentUser);
+        printUserList(userList);
+        printSeparator();
     }
 
     private void printUserList(List<User> userList) {
