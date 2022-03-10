@@ -1,17 +1,10 @@
 package com.techelevator.tenmo.model;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class Transfer {
-    private int transferID,  transferTypeID, transferStatusID;
-    @Min(value = 1, message = "Please enter a valid account number")
-    private int accountFrom, accountTo;
-    @NotEmpty
+    private int transferID, accountFrom, accountTo, transferTypeID, transferStatusID;
     private String transferType, transferStatus;
-    @Positive
     private BigDecimal amount;
 
     public Transfer() {}

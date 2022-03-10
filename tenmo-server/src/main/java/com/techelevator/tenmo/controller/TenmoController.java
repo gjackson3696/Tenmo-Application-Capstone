@@ -8,11 +8,9 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
@@ -34,13 +32,13 @@ public class TenmoController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/transfers", method = RequestMethod.POST)
-    public void createTransfer(Transfer transfer) {
+    public void createTransfer(@Valid @RequestBody Transfer transfer) {
         transferDao.createTransfer(transfer);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(path = "/transaction", method = RequestMethod.POST)
-    public void transaction(Transfer transfer) {
+    public void transaction(@Valid @RequestBody Transfer transfer) {
         Account fromAccount = accountDao.getAccountByAccountID(transfer.getAccountFrom());
         Account toAccount = accountDao.getAccountByAccountID(transfer.getAccountTo());
         if(accountDao.withdraw(fromAccount, transfer.getAmount())) {
