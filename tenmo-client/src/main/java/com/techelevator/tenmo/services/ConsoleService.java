@@ -7,6 +7,7 @@ import com.techelevator.tenmo.model.UserCredentials;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -93,12 +94,40 @@ public class ConsoleService {
         System.out.println("An error occurred. Check the log for details.");
     }
 
-    public Transfer getTransferInfo(User user) {
+    public void viewCurrentBalance(BigDecimal balance) {
+        System.out.println(String.format("Your current account balance is: $%.2f",balance.doubleValue()));
+    }
+
+    public Transfer sendMoney(User currentUser, List<User> userList) {
+        printSeparator();
+        System.out.println("Users");
+        System.out.println(String.format("%-10s%s","ID","Name"));
+        printSeparator();
+
+        userList.remove(currentUser);
+        printUserList(userList);
+        printSeparator();
+
         Transfer transfer = new Transfer();
-        transfer.setAccountTo(promptForInt("Enter ID of user you are sending to (0 to cancel):"));
+        transfer.setUserToID(promptForInt("Enter ID of user you are sending to (0 to cancel):"));
         transfer.setAmount(promptForBigDecimal("Enter amount:"));
+        transfer.setUserFromID(currentUser.getId().intValue());
+        transfer.setTransferType("Send");
+        transfer.setTransferTypeID(2);
+        transfer.setTransferStatus("Approved");
+        transfer.setTransferStatusID(2);
 
         return transfer;
+    }
+
+    private void printUserList(List<User> userList) {
+        for(User user : userList) {
+            System.out.println(String.format("%-10d%s",user.getId(),user.getUsername()));
+        }
+    }
+
+    private void printSeparator() {
+        System.out.println("-------------------------------------------");
     }
 
 }

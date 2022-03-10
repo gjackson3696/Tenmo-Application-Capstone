@@ -1,20 +1,21 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
-import org.apiguardian.api.API;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AccountService {
-
-
+public class UserService {
     public static final String API_BASE_URL = "http://localhost:8080/";
     private RestTemplate restTemplate = new RestTemplate();
     private String AUTH_TOKEN = "";
@@ -23,19 +24,17 @@ public class AccountService {
         this.AUTH_TOKEN = authToken;
     }
 
-
-
-    public BigDecimal getBalance() {
-        BigDecimal balance = null;
+    public List<User> getUserList() {
+        List<User> userList = null;
+        ParameterizedTypeReference<List<User>> responseType = new ParameterizedTypeReference<List<User>>() {};
         try {
-            ResponseEntity<BigDecimal> response = restTemplate.exchange(API_BASE_URL + "balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
-            balance = response.getBody();
+            ResponseEntity<List<User>> response = restTemplate.exchange(API_BASE_URL + "/users", HttpMethod.GET,makeAuthEntity(),responseType);
+            userList = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println(e.getMessage());;
+            BasicLogger.log(e.getMessage());
         }
-        return balance;
+        return userList;
     }
-
 
     private HttpEntity makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();

@@ -36,7 +36,9 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public Transfer getTransfer(int transferID, int accountID) {
         Transfer transfer = null;
-        String sql = "SELECT transfer.*, transfer_type.transfer_type_desc, transfer_status.transfer_status_desc " +
+        String sql = "SELECT transfer.*, transfer_type.transfer_type_desc, transfer_status.transfer_status_desc, " +
+                "(SELECT user_id FROM account JOIN transfer ON account.account_id = transfer.account_to) AS user_to, " +
+                "(SELECT user_id FROM account JOIN transfer ON account.account_id = transfer.account_from) AS user_from " +
                 "FROM transfer" +
                 "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id" +
                 "JOIN transfer_status ON transfer.transfer_status_id = transfer_status.transfer_status_id" +
@@ -73,6 +75,8 @@ public class JdbcTransferDao implements TransferDao{
         transfer.setTransferType(results.getString("transfer_type_desc"));
         transfer.setTransferStatusID(results.getInt("transfer_status_id"));
         transfer.setTransferTypeID(results.getInt("transfer_type_id"));
+        transfer.setUserFromID(results.getInt("user_from"));
+        transfer.setUserToID(results.getInt("user_to"));
         return transfer;
     }
 }

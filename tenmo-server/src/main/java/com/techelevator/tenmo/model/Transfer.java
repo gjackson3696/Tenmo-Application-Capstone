@@ -2,13 +2,14 @@ package com.techelevator.tenmo.model;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class Transfer {
-    private int transferID,  transferTypeID, transferStatusID;
-    @Min(value = 1, message = "Please enter a valid account number")
-    private int accountFrom, accountTo;
+    private int transferID, accountFrom, accountTo;
+    @NotNull
+    private int transferTypeID, transferStatusID, userFromID, userToID;
     @NotEmpty
     private String transferType, transferStatus;
     @Positive
@@ -25,6 +26,22 @@ public class Transfer {
         this.transferType = transferType;
         this.transferStatus = transferStatus;
         this.amount = amount;
+    }
+
+    public int getUserFromID() {
+        return userFromID;
+    }
+
+    public void setUserFromID(int userFromID) {
+        this.userFromID = userFromID;
+    }
+
+    public int getUserToID() {
+        return userToID;
+    }
+
+    public void setUserToID(int userToID) {
+        this.userToID = userToID;
     }
 
     public int getTransferTypeID() {

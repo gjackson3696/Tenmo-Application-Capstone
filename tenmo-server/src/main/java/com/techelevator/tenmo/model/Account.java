@@ -53,13 +53,13 @@ public class Account {
 
     public void deposit(BigDecimal amount) {
         if(amount.compareTo(BigDecimal.ZERO) == 1) { // If amount is greater than zero
-            balance.add(amount);
+            balance = balance.add(amount);
         }
     }
 
     public boolean withdraw(BigDecimal amount) {
         if(amount.compareTo(balance) <= 0 && amount.compareTo(BigDecimal.ZERO) == 1) { // If amount is less than balance and greater than zero
-            balance.subtract(amount);
+            balance = balance.subtract(amount);
             return true;
         }
         return false;

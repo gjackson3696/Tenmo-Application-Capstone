@@ -30,7 +30,8 @@ public class TransferService {
                     HttpMethod.GET, makeAuthEntity(), responseType);
             transfers = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
+            System.out.println("Failed to get transfers : " + e.getMessage());
+            //BasicLogger.log(e.getMessage());
         }
         return transfers;
     }
@@ -38,9 +39,10 @@ public class TransferService {
     public void sendMoney(Transfer transfer) {
         HttpEntity<Transfer> entity = makeTransferEntity(transfer);
         try{
-            restTemplate.put(API_BASE_URL + "transaction", entity );
+            restTemplate.put(API_BASE_URL + "transaction", entity);
         } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
+            System.out.println("Failed to send money : " + e.getMessage());
+            //BasicLogger.log(e.getMessage());
         }
     }
 

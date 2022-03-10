@@ -33,12 +33,14 @@ public class TenmoController {
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/transfers", method = RequestMethod.POST)
     public void createTransfer(@Valid @RequestBody Transfer transfer) {
+        populateTransferData(transfer);
         transferDao.createTransfer(transfer);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @RequestMapping(path = "/transaction", method = RequestMethod.POST)
+    @RequestMapping(path = "/transaction", method = RequestMethod.PUT)
     public void transaction(@Valid @RequestBody Transfer transfer) {
+        populateTransferData(transfer);
         Account fromAccount = accountDao.getAccountByAccountID(transfer.getAccountFrom());
         Account toAccount = accountDao.getAccountByAccountID(transfer.getAccountTo());
         if(accountDao.withdraw(fromAccount, transfer.getAmount())) {
@@ -55,5 +57,10 @@ public class TenmoController {
     public Map<Integer,Transfer> listTransfers(Principal principal) {
         int accountID = accountDao.getAccountByUserID(userDao.findIdByUsername(principal.getName())).getAccountID();
         return transferDao.listAll(accountID);
+    }
+
+    private void populateTransferData(Transfer transfer) {
+        transfer.setAccountFrom(accountDao.getAccountByUserID(transfer.getUserFromID()).getAccountID());
+        transfer.setAccountTo(accountDao.getAccountByUserID(transfer.getUserToID()).getAccountID());
     }
 }
