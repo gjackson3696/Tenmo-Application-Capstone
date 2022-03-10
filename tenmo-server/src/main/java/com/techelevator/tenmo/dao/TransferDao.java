@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface TransferDao {
     Map<Integer,Transfer> listAll(int accountID);
-    Transfer getTransfer(int transferID, int accountID);
+    //Transfer getTransfer(int transferID, int accountID);
     Transfer createTransfer(Transfer transfer);
     void updateTransferStatus(Transfer transfer);
 }
