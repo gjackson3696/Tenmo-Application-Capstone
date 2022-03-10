@@ -38,6 +38,12 @@ public class TenmoController {
     }
 
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @RequestMapping(path = "/transfers/update", method = RequestMethod.PUT)
+    public void updateTransfer(@Valid @RequestBody Transfer transfer) {
+        transferDao.updateTransferStatus(transfer);
+    }
+
     @RequestMapping(path = "/transaction", method = RequestMethod.PUT)
     public boolean transaction(@Valid @RequestBody Transfer transfer) {
         populateTransferData(transfer);

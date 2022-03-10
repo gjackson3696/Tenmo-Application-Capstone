@@ -143,12 +143,12 @@ public class ConsoleService {
 
     }
 
-    public int pendingRequests(User currentUser, List<User> userList) {
-        int response = promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
-        while(true) {
-            break;
-        }
-        return 1;
+    public int pendingRequests() {
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Don't approve or reject");
+        printSeparator();
+        return promptForInt("Please choose an option:");
     }
 
     private void printTransfer(Transfer transfer, User currentUser, int key, boolean isPending) {
@@ -161,9 +161,9 @@ public class ConsoleService {
                 }
             } else {
                 if (transfer.getUsernameTo().equals(currentUser.getUsername())) {
-                    System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
-                } else {
                     System.out.println(String.format("%-10d%-25s$%.2f", key, "From: " + transfer.getUsernameFrom(), transfer.getAmount()));
+                } else {
+                    System.out.println(String.format("%-10d%-25s$%.2f", key, "To: " + transfer.getUsernameTo(), transfer.getAmount()));
                 }
             }
         } else {
@@ -205,6 +205,20 @@ public class ConsoleService {
         transfer.setTransferStatusID(1);
 
         return transfer;
+    }
+    public void unableToApprove() {
+        System.out.println("You are unable to approve this transaction.");
+    }
+    public void invalidUser() {
+        System.out.println("Please enter a valid user ID.");
+    }
+
+    public void invalidTransaction() {
+        System.out.println("This transaction could not be processed.");
+    }
+
+    public void invalidChoice() {
+        System.out.println("Please enter a valid option.");
     }
 
     private void listUsers(User currentUser, List<User> userList) {

@@ -110,6 +110,34 @@ public class App {
 		// TODO Auto-generated method stub
         Map<Integer, Transfer> allTransfers = transferService.getAllTransfers();
         consoleService.displayTransactionHistory(allTransfers, currentUser.getUser(), true);
+        int response = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
+        if (isValidTransfer(response, allTransfers)) {
+            Transfer transfer = allTransfers.get(response);
+            int choice = consoleService.pendingRequests();
+            while (choice < 0 || choice > 2) {
+                consoleService.invalidChoice();
+                choice = consoleService.pendingRequests();
+            }
+            if (choice == 1) {
+                if (accountService.getBalance().compareTo(transfer.getAmount()) >= 0 && isAbleToApprove(transfer, currentUser.getUser())) {
+                    transfer.setTransferStatus("Approved");
+                    transfer.setTransferStatusID(2);
+                    transferService.updateTransferStatus(transfer);
+                    transferService.sendMoney(transfer);
+                } else if (!isAbleToApprove(transfer, currentUser.getUser())){
+                    consoleService.unableToApprove();
+                } else {
+                    consoleService.invalidTransaction();
+                }
+            }
+            if (choice == 2) {
+                transfer.setTransferStatus("Rejected");
+                transfer.setTransferStatusID(3);
+                transferService.updateTransferStatus(transfer);
+            }
+        } else if (response != 0) {
+            consoleService.invalidUser();
+        }
 	}
 
 	private void sendBucks() {
@@ -119,7 +147,7 @@ public class App {
             transferService.sendMoney(newTransfer);
             transferService.addTransfer(newTransfer);
         } else {
-            System.out.println("This transaction could not be processed");
+            consoleService.invalidTransaction();
         }
 
     }
@@ -130,7 +158,7 @@ public class App {
         if(isValidUser(newTransfer.getUserFromID())) {
             transferService.addTransfer(newTransfer);
         } else {
-            System.out.println("This transaction could not be processed");
+            consoleService.invalidTransaction();
         }
 	}
 
@@ -145,4 +173,17 @@ public class App {
         return found;
     }
 
+    private boolean isValidTransfer(int transactionID, Map<Integer, Transfer> transfers) {
+        if (transfers.containsKey(transactionID)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isAbleToApprove(Transfer transfer, User currentUser) {
+        if (currentUser.getId() == transfer.getUserFromID()) {
+            return true;
+        }
+        return false;
+    }
 }

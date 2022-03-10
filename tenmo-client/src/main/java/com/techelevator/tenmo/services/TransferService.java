@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.util.BasicLogger;
+import org.apiguardian.api.API;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -56,6 +57,15 @@ public class TransferService {
             //BasicLogger.log(e.getMessage());
         }
         return transfer;
+    }
+
+    public void updateTransferStatus(Transfer transfer) {
+        HttpEntity<Transfer> entity = makeTransferEntity(transfer);
+        try {
+            restTemplate.put(API_BASE_URL + "transfers/update", entity);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            //BasicLogger.log(e.getMessage());
+        }
     }
 
     private HttpEntity<Transfer> makeTransferEntity(Transfer auction) {
