@@ -5,6 +5,8 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.*;
 
+import java.util.Map;
+
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
@@ -57,11 +59,12 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
-        String token = currentUser.getToken();
-        accountService.setAuthToken(token);
-        transferService.setAuthToken(token);
         if (currentUser == null) {
             consoleService.printErrorMessage();
+        } else {
+            String token = currentUser.getToken();
+            accountService.setAuthToken(token);
+            transferService.setAuthToken(token);
         }
     }
 
@@ -96,7 +99,9 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-        consoleService.displayTransactionHistory(transferService.getAllTransfers(), currentUser.getUser());
+        Map<Integer, Transfer> allTransfers = transferService.getAllTransfers();
+        consoleService.displayTransactionHistory(allTransfers, currentUser.getUser());
+        consoleService.displayTransactionDetails(allTransfers);
 	}
 
 	private void viewPendingRequests() {
@@ -107,10 +112,14 @@ public class App {
 	private void sendBucks() {
 		// TODO Auto-generated method stub
 		Transfer newTransfer = consoleService.sendMoney(currentUser.getUser(),userService.getUserList());
-        transferService.sendMoney(newTransfer);
-        transferService.addTransfer(newTransfer);
+        if (accountService.getBalance().compareTo(newTransfer.getAmount()) >= 0) {
+            transferService.sendMoney(newTransfer);
+            transferService.addTransfer(newTransfer);
+        } else {
+            System.out.println("This transaction could not be processed");
+        }
 
-	}
+    }
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub

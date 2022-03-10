@@ -113,6 +113,31 @@ public class ConsoleService {
         printSeparator();
     }
 
+    public void displayTransactionDetails(Map<Integer, Transfer> transfers) {
+        int response = promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        getId:
+        while (true) {
+            if (transfers.containsKey(response)) {
+                Transfer transfer = transfers.get(response);
+                printSeparator();
+                System.out.println("Transfer Details");
+                printSeparator();
+                System.out.println("Id: " + transfer.getTransferID());
+                System.out.println("From: " + transfer.getUsernameFrom());
+                System.out.println("To: " + transfer.getUsernameTo());
+                System.out.println("Type: " + transfer.getTransferType());
+                System.out.println("Status: " + transfer.getTransferStatus());
+                System.out.println("Amount: " + String.format("$%.2f", transfer.getAmount().doubleValue()));
+                break getId;
+            } else if (response == 0) {
+                break getId;
+            }
+            response = promptForInt("Please enter a valid transfer ID (0 to cancel): ");
+        }
+
+
+    }
+
     private void printTransfer(Transfer transfer, User currentUser, int key) {
         if(transfer.getTransferType().equals("Send")) {
             if(transfer.getUsernameTo().equals(currentUser.getUsername())) {

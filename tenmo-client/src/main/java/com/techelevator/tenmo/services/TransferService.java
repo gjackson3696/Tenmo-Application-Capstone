@@ -36,14 +36,16 @@ public class TransferService {
         return transfers;
     }
 
-    public void sendMoney(Transfer transfer) {
+    public boolean sendMoney(Transfer transfer) {
         HttpEntity<Transfer> entity = makeTransferEntity(transfer);
         try{
             restTemplate.put(API_BASE_URL + "transaction", entity);
+            return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             System.out.println("Failed to send money : " + e.getMessage());
             //BasicLogger.log(e.getMessage());
         }
+        return false;
     }
 
     public Transfer addTransfer(Transfer transfer) {

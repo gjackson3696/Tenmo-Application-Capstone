@@ -37,15 +37,17 @@ public class TenmoController {
         transferDao.createTransfer(transfer);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+
     @RequestMapping(path = "/transaction", method = RequestMethod.PUT)
-    public void transaction(@Valid @RequestBody Transfer transfer) {
+    public boolean transaction(@Valid @RequestBody Transfer transfer) {
         populateTransferData(transfer);
         Account fromAccount = accountDao.getAccountByAccountID(transfer.getAccountFrom());
         Account toAccount = accountDao.getAccountByAccountID(transfer.getAccountTo());
         if(accountDao.withdraw(fromAccount, transfer.getAmount())) {
             accountDao.deposit(toAccount, transfer.getAmount());
+            return true;
         }
+        return false;
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.GET)
